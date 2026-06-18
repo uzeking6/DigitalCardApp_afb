@@ -1,0 +1,32 @@
+services:
+  approval:
+    build: .
+    ports:
+      - "5000:5000"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      DB_PATH: /app/data/approval_db
+      APPROVAL_ADMIN_PASSWORD: ${APPROVAL_ADMIN_PASSWORD:-afriland2024}
+      VCARD_API_BASE: ${VCARD_API_BASE:-http://host.docker.internal:9999}
+      VCARD_API_EMAIL: ${VCARD_API_EMAIL:-admin@afrilandfirstbank.com}
+      VCARD_API_PASS: ${VCARD_API_PASS:-admin}
+      VCARD_FRONT_URL: ${VCARD_FRONT_URL:-http://localhost:8801}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:5000}
+      VCARD_PUSH_ENABLED: ${VCARD_PUSH_ENABLED:-false}
+      SMTP_ENABLED: ${SMTP_ENABLED:-false}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_PROTOCOL: ${SMTP_PROTOCOL:-STARTTLS}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-Afriland First Bank RH}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - approval_data:/app/data
+    restart: unless-stopped
+volumes:
+  approval_data:

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carte introuvable</title>
+  <style>
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f3ef;color:#1a1a1a;
+         min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+    .box{background:#fff;border:1px solid #e5e1d8;border-radius:12px;padding:32px 28px;max-width:460px}
+    h1{color:#a8232f;font-size:20px;margin:0 0 12px}
+    p{color:#555;line-height:1.6;font-size:14px}
+    a{color:#a8232f;font-weight:600;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Carte non disponible</h1>
+    <p>Aucune carte de visite validée n'est associée à
+       <strong th:text="${email}">cet email</strong>.</p>
+    <p>Si vous avez fait une demande, elle est peut-être encore en attente de validation.
+       <br>Vous pouvez vérifier son statut sur la page <a th:href="@{/demande}">Ma Carte</a>.</p>
+  </div>
+</body>
+</html>

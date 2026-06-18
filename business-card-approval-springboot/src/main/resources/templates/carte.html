@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${c.firstName + ' ' + c.lastName + ' — Afriland First Bank'}">Carte de visite</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,Helvetica,sans-serif;background:#0e0e10;min-height:100vh;display:flex;
+         flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px 14px}
+    .card-wrap{width:600px;max-width:100%}
+    .card{position:relative;width:600px;height:340px;border:2px solid #9aa0a6;border-radius:14px;overflow:hidden;
+          background-color:#fff;background-repeat:no-repeat;background-position:center;
+          box-shadow:0 4px 20px rgba(0,0,0,.25);transform-origin:top left}
+    .inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+    .name{font-size:20px;font-weight:700;line-height:1.1;color:#1a1a2e}
+    .role{margin-top:4px;font-size:14px;font-weight:700;line-height:1.35;color:#333}
+    .dept{margin-top:2px;font-size:12px;font-weight:500;line-height:1.4;color:#2d2d2d}
+    .rows{margin-top:20px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+    .addr,.contact{font-size:11px;line-height:1.7;color:#222}
+    .addr .h{font-size:11.5px;font-weight:700;margin-bottom:2px}
+    table{border-collapse:collapse}
+    .addr th{font-weight:400;text-align:left;padding-right:8px;vertical-align:top;color:#333;white-space:nowrap}
+    .addr td{vertical-align:top}
+    .contact{text-align:right}
+    .contact th{font-weight:400;text-align:left;padding-left:6px;color:#333;white-space:nowrap}
+    .contact td{padding-left:6px;white-space:nowrap}
+    a{color:#222;text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .actionbar{display:flex;gap:14px;background:#1c1c1f;padding:12px 18px;border-radius:40px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+    .act{width:46px;height:46px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+    .act:hover{transform:translateY(-2px);background:#f3eee9}
+    .act svg{width:20px;height:20px;stroke:#a8232f;fill:none;stroke-width:1.8}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:50}
+    .overlay.show{display:flex}
+    .qrbox{background:#fff;border-radius:14px;padding:24px;text-align:center;max-width:300px}
+    .qrbox img{width:230px;height:230px}.qrbox p{font-size:13px;color:#444;margin-top:10px}
+    .qrbox a,.qrbox button{margin-top:12px;background:#a8232f;color:#fff;border:none;border-radius:6px;padding:9px 18px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(140%);background:#1a1a1a;color:#fff;padding:11px 22px;border-radius:6px;font-size:13px;transition:.25s;z-index:60}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:620px){.card,.card-wrap{width:100%}.card{height:auto;aspect-ratio:600/340}}
+  </style>
+</head>
+<body>
+  <div class="card-wrap">
+    <div class="card" id="card"
+         th:style="'background-image:url(' + ${bg} + ');background-size:' + ${bgSize} + ';'">
+      <div class="inner"
+           th:style="'padding:' + ${padTop} + 'px ' + ${padRight} + 'px ' + ${padBottom} + 'px ' + ${padLeft} + 'px'">
+        <div>
+          <h1 class="name" th:text="${c.firstName + ' ' + c.lastName}">Nom Prénom</h1>
+          <p class="role" th:text="${titleDisplay}">Fonction</p>
+          <p class="dept" th:text="${c.departmentFr}">Direction</p>
+        </div>
+        <div class="rows">
+          <div class="addr">
+            <div class="h">Place de l'Indépendance</div>
+            <table>
+              <tr><th>B.P :</th><td>11834 Yaoundé - Cameroun</td></tr>
+              <tr><th>Télex :</th><td>8907 KN</td></tr>
+              <tr><th>E-mail :</th><td><a th:href="'mailto:' + ${c.email}" th:text="${c.email}">email</a></td></tr>
+              <tr><th>Site Web :</th><td>www.afrilandfirstbank.com</td></tr>
+            </table>
+          </div>
+          <div class="contact">
+            <table>
+              <tr><th>Tél :</th><td><a th:href="'tel:' + ${phone}" th:text="${phone}">tel</a></td></tr>
+              <tr><th>Fax :</th><td><a th:href="'tel:' + ${fax}" th:text="${fax}">fax</a></td></tr>
+              <tr th:if="${c.mobile}"><th>Mob :</th><td><a th:href="'tel:' + ${c.mobile}" th:text="${c.mobile}">mob</a></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actionbar">
+    <button class="act" onclick="shareCard()" title="Partager"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+    <button class="act" onclick="showQR()" title="QR Code"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M17 21h4M21 17v4"/></svg></button>
+    <button class="act" onclick="saveImage()" title="Enregistrer l'image"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4 4 3 3-2 6 5"/></svg></button>
+    <button class="act" th:attr="data-v=${c.mobile}" onclick="callNum(this.dataset.v)" title="Appeler">
+    <button class="act" th:attr="data-v=${c.email}" onclick="mailTo(this.dataset.v)" title="E-mail">
+  </div>
+
+  <div class="overlay" id="ov" onclick="if(event.target===this)hideQR()">
+    <div class="qrbox"><img th:src="${qr}" alt="QR"><p>Scannez pour enregistrer le contact</p>
+      <a th:href="${vcfUrl}">Télécharger (.vcf)</a><br><button onclick="hideQR()">Fermer</button></div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script th:inline="javascript">
+    function toast(m){var t=document.getElementById('toast');t.textContent=m;t.className='toast show';clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2500);}
+    function showQR(){document.getElementById('ov').classList.add('show');}
+    function hideQR(){document.getElementById('ov').classList.remove('show');}
+    function callNum(n){if(n)location.href='tel:'+n.replace(/\s+/g,'');else toast('Pas de numéro');}
+    function mailTo(e){location.href='mailto:'+e;}
+    function shareCard(){var u=location.href;if(navigator.share){navigator.share({title:'Carte de visite',url:u}).catch(function(){});}else{navigator.clipboard&&navigator.clipboard.writeText(u);toast('Lien copié');}}
+    function saveImage(){var c=document.getElementById('card');if(typeof html2canvas!=='function'){toast('Hors-ligne');return;}toast('Image...');html2canvas(c,{scale:2,useCORS:true}).then(function(cv){var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='carte-afriland.png';a.click();}).catch(function(){toast('Erreur');});}
+  </script>
+</body>
+</html>
